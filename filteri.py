@@ -146,7 +146,7 @@ def pipe():
 
         for future in as_completed(futures):
             try:
-                issuer_text = future.result()  # Returns issuer name
+                issuer_text = future.result()  
                 print(f"Completed processing for issuer: {issuer_text}")
             except Exception as e:
                 print(f"An error occurred: {e}")
