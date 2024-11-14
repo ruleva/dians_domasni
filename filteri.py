@@ -102,7 +102,7 @@ def collect_data(browser, datef, datet):
     show.click()
     # time.sleep(12)
     try:
-        WebDriverWait(browser, 7).until(
+        WebDriverWait(browser, 4).until(
             EC.presence_of_element_located((By.ID, 'resultsTable'))
         )
     except TimeoutException:
