@@ -21,7 +21,7 @@ def filter1():
 
 
 def filter2(issuer):
-    file_path = f'C:\\Users\\rulev\\PycharmProjects\\dians_prva_domasna\\{issuer.text}.csv'
+    file_path = f'C:\\Users\\rulev\\PycharmProjects\\dians_prva_domasna\\issuers\\{issuer.text}.csv'
 
     if os.path.exists(file_path):
         data_loaded = pd.read_csv(file_path)
@@ -80,7 +80,7 @@ def filter3(issuer, date):
     url = BASE_URL + issuer.text.lower()
     today = datetime.today().strftime('%d.%m.%Y')
     if date != today and date is not None:
-        file_path = f'C:\\Users\\rulev\\PycharmProjects\\dians_prva_domasna\\{issuer.text}.csv'
+        file_path = f'C:\\Users\\rulev\\PycharmProjects\\dians_prva_domasna\\issuers\\{issuer.text}.csv'
         data_loaded = pd.read_csv(file_path)
         new_data = collect_data(url, date, today)
         if new_data:
@@ -96,24 +96,29 @@ def process_issuer(issuer):
     return issuer.text
 
 
-def pipe():
+def pipe(progress_callback=None):
     start_time = time.time()
-
     issuers = filter1()
 
     with ThreadPoolExecutor(max_workers=15) as executor:
         futures = [executor.submit(process_issuer, issuer) for issuer in issuers]
 
-        for future in as_completed(futures):
+        for idx, future in enumerate(as_completed(futures)):
             try:
                 issuer_text = future.result()
-                print(f"Completed processing for issuer: {issuer_text}")
+                if progress_callback:
+                    progress_callback(
+                        progress=int(((idx + 1) / len(issuers)) * 100),
+                        message=f"Completed processing for issuer: {issuer_text}"
+                    )
             except Exception as e:
-                print(f"An error occurred: {e}")
+                if progress_callback:
+                    progress_callback(message=f"Error processing issuer: {str(e)}")
 
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print(f"Time taken to fill the database: {elapsed_time:.2f} seconds")
+    if progress_callback:
+        progress_callback(message=f"Scraping completed in {elapsed_time:.2f} seconds.")
 
 
 if __name__ == "__main__":
