@@ -1,0 +1,7 @@
+services:
+  app:  # Име на сервисот
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:5000"
