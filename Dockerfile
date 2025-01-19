@@ -13,6 +13,6 @@ COPY filteri.py .
 COPY issuers/ ./issuers
 COPY templates/ ./templates
 
-EXPOSE 5000
+EXPOSE 8080
 
 CMD ["python", "app.py"]
