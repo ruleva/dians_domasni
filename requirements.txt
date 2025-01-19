@@ -1,0 +1,10 @@
+Flask
+requests
+pandas
+beautifulsoup4
+matplotlib
+seaborn
+numpy==1.24.4
+pytz==2024.2
+six==1.17.0
+tzdata==2024.2
