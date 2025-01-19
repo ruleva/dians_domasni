@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scraping in Progress</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #007BFF, #0056b3);
+      color: white;
+    }
+
+    .container {
+      background: white;
+      color: #333;
+      border-radius: 8px;
+      padding: 30px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      background-color: #f3f3f3;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 20px 0;
+      height: 20px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0;
+      background-color: #007BFF;
+      transition: width 0.3s;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #555;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      margin-top: 15px;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: none;
+      background-color: #f9f9f9;
+      color: #333;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Scraping in Progress</h1>
+  <div class="progress-bar">
+    <div class="progress-bar-fill" id="progress-bar-fill"></div>
+  </div>
+  <p class="status" id="status">Initializing...</p>
+  <textarea id="log" readonly>Starting scraping process...</textarea>
+</div>
+
+<script>
+    // Function to periodically update the progress bar and log
+    function updateProgress() {
+      const interval = setInterval(() => {
+        fetch("/get_scraping_progress")
+          .then(response => response.json())
+          .then(data => {
+            const progressBarFill = document.getElementById("progress-bar-fill");
+            const status = document.getElementById("status");
+            const log = document.getElementById("log");
+
+            // Update progress bar and status message
+            progressBarFill.style.width = data.progress + "%";
+            status.textContent = `Scraping... ${data.progress}% completed`;
+
+            // Update log
+            log.value = data.log.join("\n");
+            log.scrollTop = log.scrollHeight; // Auto-scroll to the latest log
+
+            // Stop when scraping is complete
+            if (data.progress === 100) {
+              clearInterval(interval);
+              status.textContent = "Scraping completed!";
+            }
+          });
+      }, 1000);  // Check every 2 seconds
+    }
+
+    // Start scraping automatically when the page is loaded
+    window.onload = function() {
+      updateProgress();
+    }
+  </script>
+</body>
+</html>
